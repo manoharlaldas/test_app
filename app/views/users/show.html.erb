@@ -1,0 +1,16 @@
+<% provide :sub_title, @user.name %>
+<div class="container" style="margin-top:120px;">
+	<p id="notice"><%= notice %></p>
+	<%= render 'side_pane' %>
+	<div class="row span6">
+		<% if @user.post.any? %>
+			<h3>Posts (<%= @user.post.count %>)</h3>
+      		<ol class="posts">
+        		<%= render @posts %>
+      		</ol>
+      	<%= will_paginate @posts %>
+		<% else %>
+			<h3>No post yet!</h3>
+		<% end %>
+	</div>
+</div>
