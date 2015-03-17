@@ -5,15 +5,15 @@ class CommentsController < ApplicationController
   # GET /comments.json
   def index
     # @comment = current_user.comments.limilt(10)
-    post = Post.find(params[:post_id])
+    @post = Post.find(params[:post_id])
     @comments = @post.comments
   end
 
   # GET /comments/1
   # GET /comments/1.json
   def show
-    post = Post.find(params[:post_id])
-    @comment = post.comments.find(params[:id])
+    @post = Post.find(params[:post_id])
+    @comment = Comment.find(params[:id])
 
     respond_to do |format|
       format.html {redirect_to @comment}
@@ -22,12 +22,9 @@ class CommentsController < ApplicationController
 
   # GET /comments/new
   def new
-    @post = Post.fine(params[:post_id])
-    @comment = post.comments.build
-
-    respond_to do |format|
-      format.html {redirect_to @comment}
-    end
+    @post = Post.find(params[:post_id])
+    @comment = Comment.new
+    
   end
   
 
@@ -41,8 +38,12 @@ class CommentsController < ApplicationController
   # POST /comments.json
   def create
     @post = Post.find(params[:post_id])
-    @comment = post.comments.create(params[:comment])
-    redirect_to post_path(@post)
+    @comment = @post.comments.create(params[:comment_params])
+    if @comment.save
+      redirect_to @post
+    else
+     flash.now[:danger] = "error"
+    end
   end
 
   #   respond_to do |format|
@@ -83,14 +84,14 @@ class CommentsController < ApplicationController
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_comment
-      @comment = Comment.find(params[:id])
+      @comment = Comment.find(params[:post_id])
     end
-    def set_post
-      @post = Post.find(params[:post_id])
-    end
+    # def set_post
+    #   @post = Post.find(params[:post_id])
+    # end
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def comment_params
-      params[:comment]
+      params.require(:comment).permit(:post_id, :user_id)
     end
 end
